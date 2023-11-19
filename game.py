@@ -13,6 +13,9 @@ class Game:
         # Update blobs
         for blob in self.blobs:
             blob.update()
+        
+        # Check blob collisions
+
 
     def render(self, screen, cam):
         fabric = pygame.Surface((self.xlim, self.ylim))  # Stores the rendering of the entire map. Everything is drawn on the fabric
@@ -26,3 +29,6 @@ class Game:
         cam_window.fill((0, 0, 0))
         cam_window.blit(fabric, (0, 0), (cam.get_bounds()))  # Crop the specific area seen by the camera from the fabric
         pygame.transform.scale(cam_window, screen.get_size(), screen)
+    
+    def sync(self, blobs):
+        self.blobs = blobs
