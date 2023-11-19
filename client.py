@@ -16,13 +16,15 @@ cam = Camera(0, 0, 1)
 mouseX = 0
 mouseY = 0
 
+running = True
+
 # Window loop
 def loop():
     import pygame
     pygame.init()
     screen = pygame.display.set_mode((500, 500))
-    render_clock = pygame.time.Clock()
-    running = True
+
+    global running
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -52,14 +54,12 @@ def loop():
 
         pygame.display.update()
 
-        #render_clock.tick(360)  # 360 fps
-
 threading.Thread(target=loop).start()
 
 import pygame
 conn_clock = pygame.time.Clock()
 
-while True:
+while running:
     # Read blob data from server
     blob_data = s.recv(4096)
     blobs = pickle.loads(blob_data)
@@ -71,4 +71,4 @@ while True:
     mouse_data = pickle.dumps((mouseX, mouseY))
     s.send(mouse_data)
     
-    conn_clock.tick(60)
+    conn_clock.tick(30)

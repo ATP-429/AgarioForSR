@@ -15,7 +15,7 @@ class Game:
             blob.update()
         
         # Check blob collisions
-
+        
 
     def render(self, screen, cam):
         fabric = pygame.Surface((self.xlim, self.ylim))  # Stores the rendering of the entire map. Everything is drawn on the fabric
