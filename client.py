@@ -10,11 +10,13 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect(('127.0.0.1', 5000))
 
 # Create a local copy of the game, which will keep getting synced to server's copy
-local_game = Game(1000, 1000)
+local_game = Game(10000, 10000)
 cam = Camera(0, 0, 1)
 
 mouseX = 0
 mouseY = 0
+
+split = False
 
 running = True
 
@@ -31,6 +33,10 @@ def loop():
                 running = False
             if event.type == pygame.MOUSEWHEEL:
                 cam.zoom -= event.y/10
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    global split
+                    split = True
 
         screenMouseX, screenMouseY = pygame.mouse.get_pos()
         cam_bounds = cam.get_bounds()
@@ -40,16 +46,22 @@ def loop():
         mouseX = screenMouseX/screen.get_width() * cam_bounds[2] + cam_bounds[0]
         mouseY = screenMouseY/screen.get_height() * cam_bounds[3] + cam_bounds[1]
 
+
+        cam.x = sum([blob.mass*blob.x for blob in local_game.blobs])/sum([blob.mass for blob in local_game.blobs])
+        cam.y = sum([blob.mass*blob.y for blob in local_game.blobs])/sum([blob.mass for blob in local_game.blobs])
+
+        global keys
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_a]:
-            cam.x -= 1
-        if keys[pygame.K_d]:
-            cam.x += 1
-        if keys[pygame.K_w]:
-            cam.y -= 1
-        if keys[pygame.K_s]:
-            cam.y += 1
-                
+
+        # if keys[pygame.K_a]:
+        #     cam.x -= 3
+        # if keys[pygame.K_d]:
+        #     cam.x += 3
+        # if keys[pygame.K_w]:
+        #     cam.y -= 3
+        # if keys[pygame.K_s]:
+        #     cam.y += 3
+        
         local_game.render(screen, cam)
 
         pygame.display.update()
@@ -70,5 +82,9 @@ while running:
     # Send mouse info to server
     mouse_data = pickle.dumps((mouseX, mouseY))
     s.send(mouse_data)
-    
+
+    # Send split data
+    s.send(pickle.dumps(split))
+    split = False
+
     conn_clock.tick(30)

@@ -22,9 +22,10 @@ while True:
         clock = pygame.time.Clock()
 
         # Game code
-        game = Game(1000, 1000)
-        game.add_blob(Blob(50, 50, 100, pygame.Color('red'), 0))
-        game.add_blob(Blob(200, 50, 1000, pygame.Color('red'), 0))
+        game = Game(10000, 10000)
+        #game.add_blob(Blob(50, 50, 300, pygame.Color('red'), 0))
+        #game.add_blob(Blob(1000, 50, 250, pygame.Color('red'), 0))
+        game.add_blob(Blob(2000, 50, 10000, pygame.Color('red'), 0))
 
         def game_loop():
             while True:
@@ -41,6 +42,13 @@ while True:
             # Get mouse data from client
             mouse_data = conn.recv(4096)
             mouseX, mouseY = pickle.loads(mouse_data)
+
+            # Get split data from client
+            split_data = conn.recv(24)
+            split = pickle.loads(split_data)
+
+            if split:
+                game.split()
 
             for blob in game.blobs:
                 blob.mouseX = mouseX
